@@ -26,16 +26,16 @@ const Cart = () => {
         addItemToCart(item);
     };
 
-    const amountWithoutTax = cart?.cartItems?.reduce((acc, item) => acc + item.quantity * item.price, 0);
+    const amountWithoutDiscount = cart?.cartItems?.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
-    const taxAmount = (amountWithoutTax * 0.15);
+    const discountAmount = cart?.cartItems?.reduce((acc, item) => acc + item.quantity * item.price * item.discount / 100, 0);
 
-    const totalAmount = (Number(amountWithoutTax) + Number(taxAmount));
+    const totalAmount = (Number(amountWithoutDiscount) + Number(discountAmount));
 
     const checkoutHandler = () => {
         const data = {
-          amount: amountWithoutTax,
-          tax: taxAmount,
+          amount: amountWithoutDiscount,
+          discount: discountAmount,
           totalAmount,
         };
     
@@ -114,6 +114,9 @@ const Cart = () => {
                                                         <p className="font-semibold not-italic">
                                                             {cartItem.price * cartItem.quantity}.000VND
                                                         </p>
+                                                        {Number(cartItem?.discount) !== 0 && (
+                                                            <p className="font-semibold text-red-500">-{(cartItem?.price * cartItem?.discount *cartItem?.quantity / 100).toFixed(0)}.000 VNĐ</p>
+                                                        )}
                                                         <small className="text-gray-400">
                                                             {" "}
                                                             {cartItem.price}.000 VNĐ / mỗi sản phẩm{" "}
@@ -141,7 +144,7 @@ const Cart = () => {
                                     <ul className="mb-5">
                                         <li className="flex justify-between text-gray-600  mb-1">
                                             <span>Tổng giá tiền:</span>
-                                            <span>{amountWithoutTax}.000 VNĐ</span>
+                                            <span>{amountWithoutDiscount}.000 VNĐ</span>
                                         </li>
                                         <li className="flex justify-between text-gray-600  mb-1">
                                             <span>Số sản phẩm:</span>
@@ -149,8 +152,8 @@ const Cart = () => {
                                                 {cart?.cartItems?.reduce((acc, item) => acc + item.quantity, 0 )}{" "} (sản phẩm)</span>
                                         </li>
                                         <li className="flex justify-between text-gray-600  mb-1">
-                                            <span>Thuế:</span>
-                                            <span>{taxAmount.toFixed(0)}.000 VNĐ</span>
+                                            <span>Giảm giá:</span>
+                                            <span className="text-red-500">{discountAmount.toFixed(0)}.000 VNĐ</span>
                                         </li>
                                         <li className="text-lg font-bold border-t flex justify-between mt-3 pt-3">
                                             <span>Tổng tiền:</span>

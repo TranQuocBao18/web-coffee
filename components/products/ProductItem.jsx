@@ -13,9 +13,10 @@ const ProductItem = ({ product }) => {
           product: product._id,
           name: product.name,
           price: product.price,
-          image: product.images[0].url,
+          image: "https://" + product.images[0].url,
           stock: product.stock,
           seller: product.seller,
+          discount: product.discount,
         });
     };
 
@@ -31,10 +32,10 @@ const ProductItem = ({ product }) => {
                         }}
                     >
                         <Image
-                            src={
-                                product?.images[0]
-                                ? product?.images[0].url 
-                                : "/images/default_product.png"}
+                            src={ "https://" + 
+                                ((product?.images[0] )
+                                ? (product?.images[0].url )
+                                : "res.cloudinary.com/huynvinhphuc/image/upload/v1711561942/Web-Coffee/Products/default_product.png")}
                             alt="product anme"
                             height="240"
                             width="240"
@@ -73,7 +74,9 @@ const ProductItem = ({ product }) => {
                             {product?.price}.000 VNĐ
                         </span>
 
-                        <p className="text-green-500">Free Shipping</p>
+                        {product?.discount !== "0" && (
+                            <p className="font-semibold text-red-500">-{(product?.price * product?.discount / 100).toFixed(0)}.000 VNĐ</p>
+                        )}
                         <div className="my-3">
                             <a className="px-4 py-2 inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 cursor-pointer"
                             onClick={addToCartHandler}

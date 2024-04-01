@@ -19,12 +19,13 @@ const Login = () => {
     e.preventDefault();
 
     const data = await signIn("credentials", {
+      redirect: false,
       email,
       password,
       callbackUrl: callBackUrl ? parseCallbackUrl(callBackUrl) : "/",
     });
 
-    if (data?.error) {
+    if (data?.error) {      
       toast.error(data?.error);
     }
 

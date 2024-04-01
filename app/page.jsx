@@ -9,6 +9,7 @@ const getProducts = async (searchParams) => {
     keyword: searchParams.keyword,
     page: searchParams.page,
     category: searchParams.category,
+    "discount[gt]": searchParams.discount,
     "price[gte]": searchParams.min,
     "price[lte]": searchParams.max,
     "ratings[gte]": searchParams.ratings,

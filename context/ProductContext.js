@@ -13,6 +13,22 @@ export const ProductProvider = ({ children }) => {
 
   const router = useRouter();
 
+  const updateProduct = async (product, id) => {
+    try {
+      const { data } = await axios.put(
+        `${process.env.API_URL}/api/admin/products/${id}`,
+        product
+      );
+
+      if (data) {
+        setUpdated(true);
+        router.replace(`/admin/products/${id}`);
+      }
+    } catch (error) {
+      setError(error?.response?.data?.message);
+    }
+  };
+
   const newProduct = async (product) => {
     try {
       const { data } = await axios.post(
@@ -51,6 +67,35 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
+  const deleteProduct = async (id) => {
+    try {
+      const { data } = await axios.delete(
+        `${process.env.API_URL}/api/admin/products/${id}`
+      );
+
+      if (data?.success) {
+        router.replace(`/admin/products`);
+      }
+    } catch (error) {
+      setError(error?.response?.data?.message);
+    }
+  };
+
+  const postReview = async (reviewData) => {
+    try {
+      const { data } = await axios.put(
+        `${process.env.API_URL}/api/products/review`,
+        reviewData
+      );
+
+      if (data?.success) {
+        router.replace(`/product/${reviewData?.productId}`);
+      }
+    } catch (error) {
+      setError(error?.response?.data?.message);
+    }
+  };
+
   const clearErrors = () => {
     setError(null);
   };
@@ -64,7 +109,9 @@ export const ProductProvider = ({ children }) => {
         setUpdated,
         newProduct,
         uploadProductImages,
-
+        updateProduct,
+        deleteProduct,
+        postReview,
         clearErrors,
       }}
     >

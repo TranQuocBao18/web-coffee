@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema({
-  street: {
+  name: {
     type: String,
     required: true,
   },
@@ -9,7 +9,11 @@ const addressSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  state: {
+  district: {
+    type: String,
+    required: true,
+  },
+  ward: {
     type: String,
     required: true,
   },
@@ -17,11 +21,7 @@ const addressSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  zipCode: {
-    type: String,
-    required: true,
-  },
-  country: {
+  street: {
     type: String,
     required: true,
   },

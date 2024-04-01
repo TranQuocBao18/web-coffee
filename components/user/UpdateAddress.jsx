@@ -3,12 +3,12 @@
 import React, { useState, useContext, useEffect } from "react";
 
 import Sidebar from "../layouts/Sidebar";
-
-import { countries } from "countries-list";
 import AuthContext from "@/context/AuthContext";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const UpdateAddress = ({ id, address }) => {
+
   const {
     error,
     updated,
@@ -18,18 +18,29 @@ const UpdateAddress = ({ id, address }) => {
     clearErrors,
   } = useContext(AuthContext);
 
-  const countriesList = Object.values(countries);
-
-  const [street, setStreet] = useState(address.street);
+  const [name, setName] = useState(address.name);
   const [city, setCity] = useState(address.city);
-  const [state, setState] = useState(address.state);
-  const [zipCode, setZipCode] = useState(address.zipCode);
-  const [phoneNo, setPhonoNo] = useState(address.phoneNo);
-  const [country, setCountry] = useState(address.country);
+  const [district, setDistrict] = useState(address.district);
+  const [ward, setWard] = useState(address.ward);
+  const [phoneNo, setPhoneNo] = useState(address.phoneNo);  
+  const [street, setStreet] = useState(address.street);
 
-  console.log("updated", updated);
+  const [cities, setCities] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
 
   useEffect(() => {
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
+        setCities(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  
     if (updated) {
       toast.success("Address Updated");
       setUpdated(false);
@@ -39,18 +50,54 @@ const UpdateAddress = ({ id, address }) => {
       toast.error(error);
       clearErrors();
     }
+    
   }, [error, updated]);
+
+  useEffect(() => {
+    if(cities.find(selectedCity => selectedCity.Name === city)){
+      handleCityChange(city);
+      handleDistrictChange(district);
+      setWard(ward);
+    }
+  }, [cities, districts, wards]);
+
+  const handleCityChange = (Name) => {
+    const cityName = Name;
+    setCity(cityName);
+    setDistrict('');
+    setWard('');
+    if (cityName !== '') {
+      const selectedCityData = cities.find(city => city.Name === cityName);
+      setDistricts(selectedCityData.Districts);
+    } else {
+      setDistricts([]);
+      setWards([]);
+    }
+  };
+
+  const handleDistrictChange = (Name) => {
+    const districtName = Name;
+    setDistrict(districtName);
+    setWard('');
+    if (districtName !== '') {
+      const selectedCityData = cities.find(selectedCity => selectedCity.Name === city);
+      const selectedDistrictData = selectedCityData.Districts.find(district => district.Name === districtName);
+      setWards(selectedDistrictData.Wards);
+    } else {
+      setWards([]);
+    }
+  };
 
   const submitHandler = (e) => {
     e.preventDefault();
 
     const newAddress = {
-      street,
+      name,
       city,
-      state,
-      zipCode,
+      district,
       phoneNo,
-      country,
+      ward,
+      street,
     };
 
     updateAddress(id, newAddress);
@@ -77,77 +124,91 @@ const UpdateAddress = ({ id, address }) => {
                   </h2>
 
                   <div className="mb-4 md:col-span-2">
-                    <label className="block mb-1"> Street* </label>
+                    <label className="block mb-1"> Tên địa chỉ </label>
                     <input
                       className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                       type="text"
-                      placeholder="Type your address"
-                      value={street}
-                      onChange={(e) => setStreet(e.target.value)}
+                      placeholder="Nhập tên địa chỉ"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-x-3">
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> City </label>
-                      <input
+                      <label className="block mb-1"> Tỉnh thành </label>
+                      <select
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                        type="text"
-                        placeholder="Type your city"
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                      />
+                        onChange={(e) => {
+                          setCity(e.target.value)
+                          handleCityChange(e.target.value)
+                        }}
+                      >
+                        {cities.map((city) => (
+                          <option key={city.Name} value={city.Name}>
+                            {city.Name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> State </label>
-                      <input
+                      <label className="block mb-1"> Quận huyện </label>
+                      <select
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                        type="text"
-                        placeholder="Type state here"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                      />
+                        value={district}
+                        onChange={(e) => {
+                          setDistrict(e.target.value)
+                          handleDistrictChange(e.target.value)
+                        }}
+                      >
+                        {districts.map((district) => (
+                          <option key={district.Name} value={district.Name}>
+                            {district.Name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-x-2">
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> ZIP code </label>
-                      <input
+                      <label className="block mb-1"> Phường xã </label>
+                      <select
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                        type="number"
-                        placeholder="Type zip code here"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                      />
+                        value={ward}
+                        onChange={(e) => setWard(e.target.value)}
+                      >
+                        {wards.map((ward) => (
+                          <option key={ward.Name} value={ward.Name}>
+                            {ward.Name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div className="mb-4 md:col-span-1">
-                      <label className="block mb-1"> Phone No </label>
+                      <label className="block mb-1"> Số điện thoại </label>
                       <input
                         className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
                         type="number"
-                        placeholder="Type phone no here"
+                        placeholder="Nhập số điện thoại"
                         value={phoneNo}
-                        onChange={(e) => setPhonoNo(e.target.value)}
+                        onChange={(e) => setPhoneNo(e.target.value)}
                       />
                     </div>
                   </div>
 
                   <div className="mb-4 md:col-span-2">
-                    <label className="block mb-1"> Country </label>
-                    <select
+                    <label className="block mb-1"> Đường và số nhà </label>
+                    <input
                       className="appearance-none border border-gray-200 bg-gray-100 rounded-md py-2 px-3 hover:border-gray-400 focus:outline-none focus:border-gray-400 w-full"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    >
-                      {countriesList.map((country) => (
-                        <option key={country.name} value={country.name}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
+                      type="text"
+                      placeholder="Nhập đường và số nhà"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                    />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-x-3">

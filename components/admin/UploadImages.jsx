@@ -2,10 +2,12 @@
 
 import ProductContext from "@/context/ProductContext";
 import Image from "next/image";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const UploadImages = ({ id }) => {
-  const { uploadProductImages, error, loading, clearErrors } =
+
+  const { uploadProductImages, error, loading, updated, clearErrors } =
     useContext(ProductContext);
 
   const [images, setImages] = useState([]);
@@ -30,6 +32,13 @@ const UploadImages = ({ id }) => {
       reader.readAsDataURL(file);
     });
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      clearErrors();
+    }
+  }, [error, updated]);
 
   const submitHandler = (e) => {
     e.preventDefault();

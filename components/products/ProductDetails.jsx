@@ -1,18 +1,26 @@
 "use client";
 
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useEffect } from "react";
 import StarRatings from "react-star-ratings";
 import BreadCrumbs from "../layouts/BreadCrumbs";
 import CartContext from "@/context/CartContext";
+import NewReview from "../review/NewReview";
+import OrderContext from "@/context/OrderContext";
+import Reviews from "../review/Reviews";
 
 const ProductDetails = ({product}) => {
 
     const { addItemToCart } = useContext(CartContext);
+    const { canUserReview, canReview } = useContext(OrderContext);
     const imgRef = useRef(null);
 
     const setImgPreview = (url) => {
-        imgRef.current.src = url;
+        imgRef.current.src = "https://" + url;
     };
+    
+    useEffect(() => {
+      canUserReview(product?._id);
+    }, []);
 
     const inStock = product?.stock >= 1;
 
@@ -21,9 +29,10 @@ const ProductDetails = ({product}) => {
         product: product._id,
         name: product.name,
         price: product.price,
-        image: product.images[0].url,
+        image: "https://" + product.images[0].url,
         stock: product.stock,
         seller: product.seller,
+        discount: product.discount,
       });
     };
 
@@ -45,7 +54,10 @@ const ProductDetails = ({product}) => {
                 <img
                   ref={imgRef}
                   className="object-cover inline-block"
-                  src={product?.images[0] ? product?.images[0].url : "/images/default_product.png"}
+                  src={ "https://" + 
+                                ((product?.images[0] )
+                                ? (product?.images[0].url )
+                                : "res.cloudinary.com/huynvinhphuc/image/upload/v1711561942/Web-Coffee/Products/default_product.png")}
                   alt="Product title"
                   width="340"
                   height="340"
@@ -58,7 +70,7 @@ const ProductDetails = ({product}) => {
                     >
                     <img
                         className="w-14 h-14"
-                        src={img.url}
+                        src={"https://" + img.url}
                         alt="Product title"
                         width="500"
                         height="500"
@@ -94,8 +106,12 @@ const ProductDetails = ({product}) => {
 
                 <span className="text-green-500">Verified</span>
               </div>
-
+                    
               <p className="mb-4 font-semibold text-xl">{product?.price}.000 VNĐ</p>
+
+              {product.discount !== "0" && (
+                <p className="font-semibold text-red-500">-{(product?.price * product?.discount / 100).toFixed(0)}.000 VNĐ</p>
+              )}
 
               <p className="mb-4 text-gray-500">
                 {product?.description}
@@ -137,19 +153,19 @@ const ProductDetails = ({product}) => {
             </main>
           </div>
 
-          {/* <NewReview /> */}
+          {canReview && <NewReview product={product} />}
           <hr />
 
           <div className="font-semibold">
             <h1 className="text-gray-500 review-title mb-6 mt-10 text-2xl">
               Other Customers Reviews
             </h1>
-            {/* <Reviews /> */}
+            <Reviews reviews={product?.reviews} />
           </div>
         </div>
       </section>
       </>
-    )
-}
+    );
+};
 
 export default ProductDetails

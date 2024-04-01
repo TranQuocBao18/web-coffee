@@ -11,12 +11,13 @@ const UpdateProfile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [avatar, setAvatar] = useState("");
-  const [avatarPreview, setAvatarPreview] = useState("/images/default.png");
+  const [avatarPreview, setAvatarPreview] = useState();
 
   useEffect(() => {
     if (user) {
       setName(user.name);
       setEmail(user.email);
+      setAvatarPreview(user?.avatar?.url);
     }
 
     if (error) {
@@ -77,6 +78,7 @@ const UpdateProfile = () => {
               type="text"
               placeholder="Type your email"
               required
+              readOnly
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />

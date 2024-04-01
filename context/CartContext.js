@@ -30,6 +30,7 @@ export const CartProvider = ({ children }) => {
     stock,
     seller,
     quantity = 1,
+    discount,
   }) => {
     const item = {
       product,
@@ -39,6 +40,7 @@ export const CartProvider = ({ children }) => {
       stock,
       seller,
       quantity,
+      discount,
     };
 
     const isItemExist = cart?.cartItems?.find(
@@ -66,10 +68,10 @@ export const CartProvider = ({ children }) => {
     setCartToState();
   };
 
-  const saveOnCheckout = ({ amount, tax, totalAmount }) => {
+  const saveOnCheckout = ({ amount, discount, totalAmount }) => {
     const checkoutInfo = {
       amount,
-      tax,
+      discount,
       totalAmount,
     };
 

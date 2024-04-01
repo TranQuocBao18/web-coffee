@@ -15,6 +15,7 @@ const Filters = () => {
   let queryParams;
 
   function handleClick(checkbox) {
+
     if (typeof window !== "undefined") {
       queryParams = new URLSearchParams(window.location.search);
     }
@@ -34,6 +35,7 @@ const Filters = () => {
         queryParams.append(checkbox.name, checkbox.value);
       }
     }
+
     const path = window.location.pathname + "?" + queryParams.toString();
     router.push(path);
   }
@@ -53,7 +55,7 @@ const Filters = () => {
   function checkHandler(checkBoxType, checkBoxValue) {
     if (typeof window !== "undefined") {
       queryParams = new URLSearchParams(window.location.search);
-
+      
       const value = queryParams.get(checkBoxType);
       if (checkBoxValue === value) return true;
       return false;
@@ -101,6 +103,24 @@ const Filters = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="hidden md:block px-6 py-4 border border-gray-200 bg-white rounded shadow-sm">
+        <ul className="space-y-1">
+          <li>
+            <label className="flex items-center">
+              <input
+                name="discount"
+                type="checkbox"
+                value="0"
+                className="h-4 w-4"
+                defaultChecked={checkHandler("discount", "0")}
+                onClick={(e) => handleClick(e.target)}
+              />
+              <span className="font-bold ml-2 text-red-500"> Giảm giá </span>
+            </label>
+          </li>
+        </ul>
       </div>
 
       <div className="hidden md:block px-6 py-4 border border-gray-200 bg-white rounded shadow-sm">

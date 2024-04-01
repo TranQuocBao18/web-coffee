@@ -1,20 +1,34 @@
 "use client";
 
 import ProductContext from "@/context/ProductContext";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const NewProduct = () => {
-  const { newProduct } = useContext(ProductContext);
+const UpdateProduct = ({ data }) => {
+
+    const { updateProduct, error, updated, setUpdated, clearErrors } = useContext(ProductContext);
 
   const [product, setProduct] = useState({
-    name: "",
-    description: "",
-    seller: "",
-    price: "",
-    stock: "",
-    category: "",
-    discount: "",
+    name: data?.name,
+    description: data?.description,
+    seller: data?.seller,
+    price: data?.price,
+    stock: data?.stock,
+    category: data?.category,
+    discount: data?.discount,
   });
+
+  useEffect(() => {
+    if (updated) {
+      toast.success("Product Updated");
+      setUpdated(false);
+    }
+
+    if (error) {
+      toast.error(error);
+      clearErrors();
+    }
+  }, [error, updated]);
 
   const { name, description, seller, price, stock, category, discount } = product;
 
@@ -33,13 +47,13 @@ const NewProduct = () => {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    newProduct(product);
+    updateProduct(product, data?._id);
   };
 
   return (
     <section className="container max-w-3xl p-6 mx-auto">
       <h1 className="mb-3 text-xl md:text-3xl font-semibold text-black mb-8">
-        Create New Product
+        Update Product
       </h1>
 
       <form onSubmit={submitHandler}>
@@ -165,11 +179,11 @@ const NewProduct = () => {
           type="submit"
           className="my-2 px-4 py-2 text-center inline-block text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 w-full"
         >
-          Create Product
+          Update Product
         </button>
       </form>
     </section>
   );
 };
 
-export default NewProduct;
+export default UpdateProduct;

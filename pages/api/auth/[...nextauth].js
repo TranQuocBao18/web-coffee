@@ -32,6 +32,10 @@ export default async function auth(req, res) {
             throw new Error("Invalid Email or Password");
           }
 
+          if (user.status !== "enable") {
+            throw new Error("Tài khoản của bạn đã bị khóa");
+          }
+
           return user;
         },
       }),
