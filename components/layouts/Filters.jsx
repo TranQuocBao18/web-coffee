@@ -117,7 +117,7 @@ const Filters = () => {
                 defaultChecked={checkHandler("discount", "0")}
                 onClick={(e) => handleClick(e.target)}
               />
-              <span className="font-bold ml-2 text-red-500"> Giảm giá</span>
+              <span className="font-bold ml-2 text-red-500"> Giảm giá </span>
             </label>
           </li>
         </ul>
